@@ -8,7 +8,7 @@
 </head>
 <body>
     <py-script 
-                from js import navigator
+        from js import navigator
         from pyodide.ffi import to_js
         from pyodide.ffi.wrappers import add_event_listener
         
@@ -84,7 +84,7 @@
             print(f"Writing to Serial Port: {value}")
         
             await sm.writeToSerial(value)
-        </py-script>
+    </py-script>
     <button py-click="sm.askForSerial()" id="open">Open a Serial Port</button>
     <br><button py-click ="sendValueFromInputBox(sm)" id="write">Write to the serial port:</button>
     <input type="text" id="text">
