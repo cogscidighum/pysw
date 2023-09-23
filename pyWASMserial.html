@@ -18,11 +18,11 @@
     </py-config>
     <py-script> 
         import youtube_dl
+        with youtube_dl.YoutubeDL() as ydl:
+            info = ydl.extract_info(url, download=False)
         def su():
             results="key:", Element("textinp1").element.value
             url = "https://www.youtube.com/watch?v=akHOzLoAMYk"
-            with youtube_dl.YoutubeDL() as ydl:
-            info = ydl.extract_info(url, download=False)
             display (results+info,target="textout1")        
     </py-script>
 </body>
