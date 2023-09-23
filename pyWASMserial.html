@@ -15,6 +15,12 @@
          
     <h3>Output:</h3>
     <div id="textout1"></div>
+    <py-config>
+        plugins = [
+        "https://pyscript.net/latest/plugins/python/py_tutor.py"
+        ]
+        packages = ["requests_html", "bs4", "re", "json"]
+    </py-config>
     <py-script>
         from requests_html import HTMLSession
         from bs4 import BeautifulSoup as bs
