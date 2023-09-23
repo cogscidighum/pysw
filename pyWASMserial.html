@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +17,13 @@
         packages = ["youtube_dl"]
     </py-config>
     <py-script> 
+        import youtube_dl
         def su():
             results="key:", Element("textinp1").element.value
-            display (results,target="textout1")
+            url = "https://www.youtube.com/watch?v=akHOzLoAMYk"
+            with youtube_dl.YoutubeDL() as ydl:
+            info = ydl.extract_info(url, download=False)
+            display (results+info,target="textout1")        
     </py-script>
 </body>
 </html>
