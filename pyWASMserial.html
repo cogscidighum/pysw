@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css">
 </head>
 <body>
-    <h3>Output:</h3>
-    <div id="inp1-out1"></div>
     <py-script> 
         def su(url):
             results="youtube fake url1" + url
-            display (results,target="inp1-out1")
+            display (results,target="textout1")
             return results
     </py-script>
-    <input type="text" id="textURL">
-    <button py-click="smu(textURL.value)" id="open">Scrape YT</button>
+    <h3>Input:</h3>
+    <input type="text" id="textinp1">
+    <button py-click="smu(Element("textinp1").element.value)" id="open">Scrape YT</button>
+    <h3>Output:</h3>
+    <div id="textout1"></div>
 </body>
 </html>
