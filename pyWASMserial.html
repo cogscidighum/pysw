@@ -16,10 +16,13 @@
     <h3>Output:</h3>
     <div id="textout1"></div>
     <py-script> 
+        x=0
         def su():
-            results="info: ", Element("textinp1").element.value
-            #Element("textout1").element.style.display = "block"
-            display (results,target="textout1", append="False")
+            if x==0:
+                x+=1
+            else x+=1
+            results="key"+x+":", Element("textinp1").element.value
+            display (results,target="textout1")
             #return results
     </py-script>
 </body>
