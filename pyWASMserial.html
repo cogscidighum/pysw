@@ -9,15 +9,15 @@
 <body>
     <h3>Input:</h3>
     <input type="text" id="textinp1">
-    <button py-click="su(Element("textinp1").element.value)" id="open">Scrape YT</button>
+    <button py-click="su()" id="open">Scrape YT</button>
     <h3>Output:</h3>
     <div id="textout1"></div>
     <py-script> 
-        def su(url):
-            results="youtube fake url1" + url
+        def su():
+            results=Element("textinp1").element.value
             Element("textout1").element.style.display = "block"
             display (results,target="textout1", append="False")
-            return results
+            #return results
     </py-script>
 </body>
 </html>
