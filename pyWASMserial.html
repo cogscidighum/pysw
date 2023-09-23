@@ -1,15 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>WebSerial Demo</title>
-    <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css">
-</head>
-<body>
-    <py-script>src="./pysw/WebSerialDemo.py"></py-script>
-    <button py-click="sm.askForSerial()" id="open">Open a Serial Port</button>
-    <br><button py-click ="sendValueFromInputBox(sm)" id="write">Write to the serial port:</button>
-    <input type="text" id="text">
-</body>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Inpout!</title>
+        <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
+        <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css">
+    </head>
+    <body>
+          <div id="inpout-source">
+            <h3>Input:</h3><input type="text" id="txt-inp1" class="py-input" size="6" /><br>
+            <button
+                type="submit"
+                id="btn-proc"
+                class="py-button"
+                py-click="procinp1(Element("txt-inp1").element.value)"
+            >
+            Process
+            </button>
+        </div>
+        <h3>Output:</h3>
+        <div id="inp1-out1"></div>
+        <div id="out1" hidden>
+
+        </div>
+        <py-script>
+            def procinp1(*args, **kws):
+              # clear output
+              #Element("out1").element.innerHTML = ""
+              
+              inp1 = "Hi " + x
+                            
+              Element("inp1-out1").element.style.display = "block"
+              display (inp1, target="inp1-out1", append="False")
+        </py-script>
+    </body>
 </html>
