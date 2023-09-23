@@ -7,9 +7,18 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css">
 </head>
 <body>
-    <h3>Input:</h3>
-    <input type="text" id="textinp1">
-    <button py-click="su(Element("textinp1").element.value)" id="open">Scrape YT</button>
+    <div id="inpout-source">
+        <h3>Input:</h3><input type="text" id="textinp1" class="py-input" size="6" /><br>
+        <button
+            type="submit"
+            id="btn-proc"
+            class="py-button"
+            py-click="su()"
+        >
+        Process
+        </button>
+    </div>
+         
     <h3>Output:</h3>
     <div id="textout1"></div>
     <py-script> 
