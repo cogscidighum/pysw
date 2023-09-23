@@ -7,26 +7,9 @@
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css">
 </head>
 <body>
-    <div id="inpout-source">
-        <h3>Input:</h3><input type="text" id="textinp1" class="py-input" size="6" /><br>
-        <button
-            type="submit"
-            id="btn-proc"
-            class="py-button"
-            py-click="su( Element("textinp1").element.value)"
-        >
-        Process
-        </button>
-    </div>
-         
-    <h3>Output:</h3>
-    <div id="textout1"></div>
-    <py-script> 
-        def su(x):
-            results=x
-            Element("textout1").element.style.display = "block"
-            display (results,target="textout1", append="False")
-            #return results
-    </py-script>
+    <py-script>src="./PPTworkshops/pywasm/WebSerialDemo.py"></py-script>
+    <button py-click="sm.askForSerial()" id="open">Open a Serial Port</button>
+    <br><button py-click ="sendValueFromInputBox(sm)" id="write">Write to the serial port:</button>
+    <input type="text" id="text">
 </body>
 </html>
