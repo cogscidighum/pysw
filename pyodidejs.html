@@ -6,7 +6,7 @@
   <body>
     <script type="text/javascript">
       //async function main(){
-        const pyodide = new loadPyodide(); //await loadPyodide();
+        const pyodide = new pyodide.loadPyodide(); //await loadPyodide();
         console.log(pyodide.runPython("1 + 2"));
         alert (pyodide.runPython("1 + 2"));
       //}
