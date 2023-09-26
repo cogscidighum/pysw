@@ -14,7 +14,8 @@
     <py-config>
         packages = ["youtube_dl"]
     </py-config>
-    <py-script> 
+    <py-script>
+        await micropip.install("ssl")
         import youtube_dl
         with youtube_dl.YoutubeDL() as ydl:
             info = ydl.extract_info(url, download=False)
