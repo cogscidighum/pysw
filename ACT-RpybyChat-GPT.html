@@ -71,6 +71,64 @@
                   
                   # Run the model
                   model.run()
+
+                class ACTRModel:
+                    def __init__(self):
+                        self.declarative_memory = {}
+                        self.procedural_memory = {}
+                        self.goal_buffer = None
+                
+                    def add_chunk(self, chunk_name, slot_values):
+                        self.declarative_memory[chunk_name] = slot_values
+                
+                    def set_goal(self, goal):
+                        self.goal_buffer = goal
+                
+                    def retrieve(self, query):
+                        matches = []
+                        for chunk_name, slot_values in self.declarative_memory.items():
+                            if all(item in slot_values.items() for item in query.items()):
+                                matches.append(chunk_name)
+                        return matches[0] if matches else None
+                
+                    def run(self):
+                        step = 1
+                        while self.goal_buffer is not None:
+                            goal_chunk = self.declarative_memory[self.goal_buffer]
+                
+                            if 'state' in goal_chunk:
+                                state = goal_chunk['state']
+                                if state == 'count':
+                                    # Retrieve the current count
+                                    count = goal_chunk['count']
+                
+                                    if count == 0:
+                                        # If count reaches 0, terminate the model
+                                        print("Count reached 0. Done!")
+                                        self.goal_buffer = None  # Set the goal buffer to None to terminate
+                                    else:
+                                        # Print the current step and the count
+                                        print(f"Step {step}: Counting down from {count}...")
+                
+                                        # Create a new goal to continue counting down
+                                        new_count = count - 1
+                                        self.set_goal('count_goal')  # Set the new goal name
+                                        self.declarative_memory['count_goal']['count'] = new_count  # Update the count in memory
+                
+                                    step += 1  # Increment the step when progress is made
+                
+                                    # Create an instance of the ACT-R model
+                                    model = ACTRModel()
+                                    
+                                    # Define the initial count
+                                    model.add_chunk('count_goal', {'state': 'count', 'count': 5})
+                                    
+                                    # Set the initial goal to start counting
+                                    model.set_goal('count_goal')
+                                    
+                                    # Run the model
+                                    model.run()
+
                 </py-script>
             </section>
     </body>
