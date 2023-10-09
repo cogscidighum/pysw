@@ -1,27 +1,368 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Antigravity</title>
-        <meta charset="utf-8" />
-        <link rel="stylesheet" href="./assets/css/examples.css" />
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    </head>
-    <body>
-            <section class="pyscript">
-                <py-config>
-                    packages = ["gradio_client"]
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Tic-Tac-Toe</title>
+    <style type="text/css">
+        div { margin: 5px;}
+        table{ table-layout:fixed; }
+        td.tttField {
+            width:70px;
+            height:70px;
+            max-width:150px;
+            max-height:150px;
+            min-width:50px;
+            min-height:50px;
+            text-align: center;
+            font-family: "Arial";
+            font-size: 36px;
+            cursor: pointer;
+        }
+        td.tttField:hover {
+            background-color: Aquamarine;
+        }
+    </style>
+    <script>
+        var totalFields = 9;//matrix.length * matrix.length;
+        var COMPUTER_WIN = 1;
+        var COMPUTER_LOST = -1;
+        var DRAW = 0;
+        var NOT_FINISHED = 728;
+        var computerFigure;
 
-                </py-config>
-                <b>Based on xkcd: antigravity https://xkcd.com/353/.</b>
-                <py-script>
-                    await micropip.install("ssl")
-                    from gradio_client import Client
-                    
-                    client = Client("https://osaaso-ytscrap.hf.space/")
-                    result = client.predict(
-                    				"https://www.youtube.com/watch?v=prt9D90BvFI",	# str in 'link' Textbox component
-                    				api_name="/predict"
-                    )
-                </py-script>
-            </section>
-    </body>
+        /**
+         * Return null if there is no move possible as the matrix is full.
+         * @param matrix
+         * @param computerFigure
+         * @returns {state: number, {row: number, col: number}}
+         */
+        function doBestMove(matrix, figure) {
+            computerFigure = figure;
+            var bestMoves = [];
+            var result = { nextMove: null, state: null };
+            result.state = gameState(matrix);
+            if (result.state == NOT_FINISHED) {
+                var maxPts = null;
+                for (var r = 0; r < matrix.length; r++) {
+                    for (var c = 0; c < matrix.length; c++) {
+                        if (matrix[r][c] == '') {
+                            var matrixCopy = copyMatrix(matrix);
+                            matrixCopy[r][c] = figure;
+                            var pts = evaluateGames(matrixCopy, toggle(figure), 0);
+                            //console.log("Evaluation for: (" + r + "," + c + ", pts=" + eval);
+                            if (maxPts == null || pts == maxPts) {
+                                maxPts = pts;
+                                bestMoves[bestMoves.length] = { row: r, col: c };
+                            } else if (pts > maxPts) {
+                                maxPts = pts;
+                                bestMoves.length = 0;
+                                bestMoves[bestMoves.length] = { row: r, col: c };
+                            }
+                        }
+                    }
+                }
+                if (bestMoves.length > 0) {
+                    result.nextMove = bestMoves[randomInt(0, bestMoves.length - 1)];
+                    matrix[result.nextMove.row][result.nextMove.col] = figure;
+                }
+                // update game state again
+                result.state = gameState(matrix);
+            }
+            return result;
+        }
+
+        /**
+         * Returns random integer number form given range
+         * @param min
+         * @param max
+         * @returns {*}
+         */
+        function randomInt(min, max) {
+            return min + Math.floor((max - min) * Math.random());
+        }
+
+        /**
+         * Evaluate all possible games from given point (game state) and calculate total sore for each of them
+         * @param matrix
+         * @param figure
+         * @param result
+         * @returns {number}
+         */
+        function evaluateGames(matrix, figure, result) {
+            var min = null;
+            var max = null;
+            var gameResult = gameState(matrix);
+            if (gameResult == COMPUTER_LOST) {
+                result = -10 * countOccupiedFields(matrix);
+            }
+            else if (gameResult == COMPUTER_WIN) {
+                result = 10 * countOccupiedFields(matrix);
+            }
+            else if (gameResult == DRAW) {
+                result = 0;
+            }
+            else if (gameResult == NOT_FINISHED) {
+                for (var r = 0; r < matrix.length; r++) {
+                    for (var c = 0; c < matrix.length; c++) {
+                        var matrixCopy = copyMatrix(matrix);
+                        if (matrixCopy[r][c] == '') {
+                            matrixCopy[r][c] = figure;
+                            var pts = evaluateGames(matrixCopy, toggle(figure), result);
+                            min = min == null ? pts : min;
+                            max = max == null ? pts : max;
+                            if (pts < min) {
+                                min = pts;
+                            }
+                            else if (pts > max) {
+                                max = pts;
+                            }
+                        }
+                    }
+                }
+                result += (isOpponentsTurn(figure) ? min : max);
+            }
+            return result;
+        }
+
+        function isOpponentsTurn(currentFigure) {
+            return currentFigure != computerFigure;
+        }
+
+        function toggle(figure) {
+            return figure == 'X' ? 'O' : 'X';
+        }
+
+
+        /**
+         * @param matrix
+         * @param figure
+         * @returns  0 - DRAW, 1 - 'X' has won, -1 - 'O' has won
+         */
+        function gameState(matrix) {
+            // horizontal scan...
+            var countX = 0, countO = 0, winCount = 3;
+            for (var r = 0; r < matrix.length; r++) {
+                for (var c = 0; c < matrix.length; c++) {
+                    countX = matrix[r][c] == 'X' ? countX + 1 : 0;
+                    countO = matrix[r][c] == 'O' ? countO + 1 : 0;
+                }
+                if (countX == winCount)
+                    return computerFigure == 'X' ? COMPUTER_WIN : COMPUTER_LOST;
+                if (countO == winCount)
+                    return computerFigure == 'O' ? COMPUTER_WIN : COMPUTER_LOST;
+                countX = countO = 0;
+            }
+            //vertical scan...
+            countX = countO = 0;
+            for (var c = 0; c < matrix.length; c++) {
+                for (var r = 0; r < matrix.length; r++) {
+                    countX = matrix[r][c] == 'X' ? countX + 1 : 0;
+                    countO = matrix[r][c] == 'O' ? countO + 1 : 0;
+                }
+                if (countX == winCount)
+                    return computerFigure == 'X' ? COMPUTER_WIN : COMPUTER_LOST;
+                if (countO == winCount)
+                    return computerFigure == 'O' ? COMPUTER_WIN : COMPUTER_LOST;
+                countX = countO = 0;
+            }
+            //diagonal scan left top
+            countX = countO = 0;
+
+            //scan diagonal line  (top-left)
+            for (var r = 0; r < matrix.length; r++) {
+                var colStart = 0;
+                var rowStart = r;
+                for (var x = colStart, y = rowStart; x < matrix.length && y < matrix.length; x++, y++) {
+                    countX = matrix[x][y] == 'X' ? countX + 1 : 0;
+                    countO = matrix[x][y] == 'O' ? countO + 1 : 0;
+                    if (countX == winCount)
+                        return computerFigure == 'X' ? COMPUTER_WIN : COMPUTER_LOST;
+                    if (countO == winCount)
+                        return computerFigure == 'O' ? COMPUTER_WIN : COMPUTER_LOST;
+                }
+                countX = countO = 0;
+            }
+
+            //scan diagonal line  (bottom-right)
+            for (var r = 0; r < matrix.length; r++) {
+                var colStart = matrix.length - 1;
+                var rowStart = r;
+                for (var x = colStart, y = rowStart; x < matrix.length && y < matrix.length; x--, y++) {
+                    countX = matrix[x][y] == 'X' ? countX + 1 : 0;
+                    countO = matrix[x][y] == 'O' ? countO + 1 : 0;
+                    if (countX == winCount)
+                        return computerFigure == 'X' ? COMPUTER_WIN : COMPUTER_LOST;
+                    if (countO == winCount)
+                        return computerFigure == 'O' ? COMPUTER_WIN : COMPUTER_LOST;
+                }
+                countX = countO = 0;
+            }
+
+            if (countOccupiedFields(matrix) == totalFields) {
+                return DRAW;
+            }
+            return NOT_FINISHED;    // game is not over
+        }
+
+        function matrixFull(matrix) {
+            // check if matrix is full...
+            return countOccupiedFields(matrix) == totalFields;
+        }
+
+        function countOccupiedFields(matrix) {
+            var count = 0;
+            for (var r = 0; r < matrix.length; r++) {
+                for (var c = 0; c < matrix.length; c++) {
+                    count = matrix[r][c] != '' ? count + 1 : count;
+                }
+            }
+            return count;
+        }
+
+        /**
+         * Copies arrays - deep copy of two dimensional array
+         * @param matrix
+         * @returns {Array}
+         */
+        function copyMatrix(matrix) {
+            var matrixCopy = [['', '', ''], ['', '', ''], ['', '', '']];
+            for (var r = 0; r < matrix.length; r++) {
+                for (var c = 0; c < matrix.length; c++) {
+                    matrixCopy[r][c] = matrix[r][c];
+                }
+            }
+            return matrixCopy;
+        }
+
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div class="container">
+    <div class="col-md-8 offset-md-2">
+        <h1>Tic-Tac-Toe - min max algorithm test</h1>
+        <div class="row">
+            <div class="col-3 align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="figureSelect" id="playModeX" value="X" checked>
+                    <label class="form-check-label" for="playModeX">Play as X</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="figureSelect" id="playModeO" value="O" >
+                    <label class="form-check-label" for="playModeO">Play as O</label>
+                </div>
+            </div>
+            <div class="col-4 align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="true" id="computerStarts" name="computerStarts">
+                    <label class="form-check-label" for="computerStarts">Computer first</label>
+                </div>
+                <button class="btn-sm btn-primary" type="button" onclick="newGame()">New game</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col align-items-center">
+                <table>
+                    <tr>
+                        <td class="tttField border border-0" id="0_0"></td>
+                        <td class="tttField border border-top-0" id="0_1"></td>
+                        <td class="tttField border border-0" id="0_2"></td>
+                    </tr>
+                    <tr>
+                        <td class="tttField border border-left-0" id="1_0"></td>
+                        <td class="tttField border" id="1_1"></td>
+                        <td class="tttField border border-right-0" id="1_2"></td>
+                    </tr>
+                    <tr>
+                        <td class="tttField border border-0" id="2_0"></td>
+                        <td class="tttField border border-bottom-0" id="2_1"></td>
+                        <td class="tttField border border-0" id="2_2"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!--Copyright-->
+        <div class="footer-copyright py-3">
+            © 2020 Copyright: Slawomir Korbas
+        </div>
+    </div>
+</div>
+
+
+</div>
+</body>
+<script>
+    var userFigure = 'X';
+    var gameOver = false;
+    var engineIsThinking = false;
+    var computerStarts = false;
+    var matrix = [ ['','',''], ['','',''], ['','',''] ];
+
+    function newGame() {
+        userFigure = $("input[name='figureSelect']:checked").val();
+        computerStarts = $("input[name='computerStarts']:checked").val();
+        gameOver = false;
+        engineIsThinking = false;
+        matrix.length = 0;
+        matrix = [ ['','',''], ['','',''], ['','',''] ];
+        redraw();
+        if(computerStarts) {
+            continueGame(matrix);
+        }
+    }
+
+    $( document ).ready(function() {
+        $(".tttField").each(function(index) {
+            $(this).click( function() {
+                putFigure($(this));
+            });
+        });
+        redraw();
+    });
+
+    function putFigure(cell) {
+        if(engineIsThinking == false && !gameOver) {
+            var rc = cell.attr('id').split('_');
+            var row = rc[0];
+            var col = rc[1];
+            if (matrix[row][col] == '') {
+                engineIsThinking = true;
+                matrix[row][col] = userFigure;
+                redraw();
+                setTimeout(function () {
+                    continueGame(matrix);
+                }, 300);
+            }
+        }
+    }
+
+    function redraw() {
+        for( var row = 0; row < matrix.length; row++ ) {
+            for( var col = 0; col < matrix.length; col++ ) {
+                $('#' + row + "_" + col).html(matrix[row][col]);
+                $('#' + row + "_" + col).css('color', matrix[row][col] == 'X' ? 'blue' : 'green' );
+            }
+        }
+    }
+
+    function continueGame(matrix) {
+        var computerFigure = userFigure == 'X' ? 'O' : 'X';
+        var result = doBestMove( matrix, computerFigure );
+        if( result.state != NOT_FINISHED ) {
+            gameOver = true;
+        }
+        redraw();
+        engineIsThinking = false;
+    }
+</script>
 </html>
