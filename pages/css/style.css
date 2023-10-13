@@ -1,0 +1,81 @@
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+}
+
+main {
+  text-align: justify;
+}
+
+blockquote {
+  font-style: italic;
+  border-left: 6px solid #c1c0bd;
+  padding-left: 12px;
+}
+
+hr {
+  margin: 4em;
+}
+
+form {
+  text-align: center;
+  margin-bottom: 4em;
+}
+
+form > * {
+  display: inline-block;
+}
+
+input[type="number"] {
+  width: 100px;
+  text-align: center;
+}
+
+table thead tr th, td {
+  text-align: center;
+}
+
+footer {
+  text-align: center;
+}
+
+span.badge {
+  letter-spacing: 0.2rem;
+}
+
+#wikipedia-source {
+  text-align: center;
+}
+
+#game {
+  text-align: right;
+}
+
+#game tbody {
+  display: block;
+  max-height: 24em;
+  overflow-x: auto;
+}
+
+#game tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#game tfoot tr {
+  margin-top: 1em;
+}
+
+#ratio1, #ratio2 {
+  display: inline-block;
+}
+
+#table > form {
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+
+#algorithms th, #algorithms td {
+  min-width: 10em;
+  text-align: left;
+}
