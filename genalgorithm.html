@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Brain</title>
+    <title>Genetic Algorithm</title>
+    <input type="text" id="inpTarget" value="hit" placeholder="input a string here"></input>
+        <input type="text" id="inpPopSize" value="20" placeholder="input population size"></input>
+
+    <button type="button"
+onclick="gen()">
+Generate</button>
+
 </head>
 <body>    
     <script>
@@ -139,8 +146,13 @@ function generate(populationSize, target, mutationRate, generations) {
   console.log(membersKeys);
   console.log(`${perfectCandidatesNum ? perfectCandidatesNum.length : 0} member(s) typed "${target}"`);
 }
+function gen(){
 
-generate(20, 'hit', 0.05, 20);
+const populationSize=inpPopSize.value;
+const target=inpTarget.value;
+    
+generate(populationSize, target, 0.05, 20);
+};
 </script>
 </body>
 </html>
