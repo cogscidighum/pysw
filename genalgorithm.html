@@ -8,7 +8,7 @@
     <button type="button"
 onclick="gen()">
 Generate</button>
-<div id="output">Generations</div>
+<div id="output_holder">Generations</div>
 </head>
 <body>    
     <script>
@@ -144,8 +144,11 @@ function generate(populationSize, target, mutationRate, generations) {
   //document.write(`${perfectCandidatesNum ? perfectCandidatesNum.length : 0} member(s) typed "${target}"`);
       const output_holder = document.getElementById("output");
      
-     output_holder.textContent=membersKeys;
-     output_holder.textContent=`${perfectCandidatesNum ? perfectCandidatesNum.length : 0} member(s) typed "${target}"`;
+     //output_holder.textContent=membersKeys;
+     //output_holder.textContent=`${perfectCandidatesNum ? perfectCandidatesNum.length : 0} member(s) typed "${target}"`;
+        
+        document.getElementById("output_holder").innerHTML =membersKeys;
+        document.getElementById("output_holder").innerHTML =${perfectCandidatesNum ? perfectCandidatesNum.length : 0} member(s) typed "${target};
 
   console.log(membersKeys);
   console.log(`${perfectCandidatesNum ? perfectCandidatesNum.length : 0} member(s) typed "${target}"`);
